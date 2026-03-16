@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useMotionValue, useSpring, useTransform, motion } from 'framer-motion';
+import { useMotionValue, useSpring } from 'framer-motion';
 import { formatNumber } from '../../utils/formatters';
 
 /**

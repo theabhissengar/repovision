@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ScoreGauge from '../components/charts/ScoreGauge';
@@ -64,25 +63,6 @@ function FloatingRepoCard({ delay, style, name, stars, lang, score }) {
 
 function HeroSection() {
   const navigate = useNavigate();
-  const [input, setInput] = useState('');
-  const [focused, setFocused] = useState(false);
-  const [error, setError] = useState('');
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    const fullUrl = input.startsWith('https://') || input.startsWith('http://')
-      ? input
-      : `https://github.com/${input}`;
-
-    if (!isValidGithubUrl(fullUrl)) {
-      setError('Enter a valid GitHub URL, e.g. vercel/next.js');
-      return;
-    }
-    setError('');
-    navigate('/analyze', { state: { prefillUrl: fullUrl } });
-  }
-
-  const EXAMPLE_REPOS = ['vercel/next.js', 'facebook/react', 'microsoft/vscode'];
 
   return (
     <section className="relative min-h-[88vh] flex flex-col items-center justify-center overflow-hidden px-6 py-20">
@@ -151,88 +131,33 @@ function HeroSection() {
           commit activity, health indicators, and side-by-side comparisons.
         </motion.p>
 
-        {/* Search input */}
-        <motion.form
-          variants={panelReveal}
-          onSubmit={handleSubmit}
-          className="w-full max-w-lg"
-        >
-          <div
-            className="flex rounded-xl border overflow-hidden transition-all duration-200"
-            style={{
-              background: 'var(--rv-bg-2)',
-              borderColor: error ? 'rgba(248,113,113,0.5)' : focused ? 'var(--rv-blue)' : 'var(--rv-border-2)',
-              boxShadow: focused && !error ? '0 0 0 4px rgba(74,158,255,0.1)' : 'none',
-            }}
-          >
-            <div
-              className="flex items-center pl-4 shrink-0"
-              style={{ color: 'var(--rv-text-3)', fontFamily: 'var(--rv-font-mono)', fontSize: 13 }}
-            >
-              github.com/
-            </div>
-            <input
-              type="text"
-              value={input}
-              onChange={e => { setInput(e.target.value); setError(''); }}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-              placeholder="owner/repo"
-              className="flex-1 bg-transparent px-3 py-4 text-sm outline-none"
-              style={{
-                color: 'var(--rv-text-1)',
-                fontFamily: 'var(--rv-font-mono)',
-              }}
-              spellCheck={false}
-              autoComplete="off"
-            />
-            <button
-              type="submit"
-              className="px-5 text-sm font-semibold transition-all duration-150 shrink-0 cursor-pointer"
-              style={{
-                background: 'var(--rv-blue)',
-                color: 'white',
-                borderLeft: '1px solid rgba(74,158,255,0.3)',
-              }}
-            >
-              Analyze
-            </button>
-          </div>
-
-          {error && (
-            <p className="text-xs mt-2 text-left" style={{ color: 'var(--rv-rose)', fontFamily: 'var(--rv-font-mono)' }}>
-              ✗ {error}
-            </p>
-          )}
-        </motion.form>
-
-        {/* Quick examples */}
+        {/* CTA buttons moved from bottom section */}
         <motion.div
           variants={panelReveal}
-          className="flex flex-wrap items-center justify-center gap-2 mt-5"
+          className="flex flex-wrap items-center justify-center gap-3"
         >
-          <span className="text-xs" style={{ color: 'var(--rv-text-3)', fontFamily: 'var(--rv-font-mono)' }}>
-            try:
-          </span>
-          {EXAMPLE_REPOS.map(repo => (
-            <button
-              key={repo}
-              type="button"
-              onClick={() => {
-                setInput(repo);
-                setError('');
-              }}
-              className="text-xs px-2.5 py-1 rounded-lg border transition-all duration-150 cursor-pointer"
-              style={{
-                color: 'var(--rv-text-2)',
-                borderColor: 'var(--rv-border-1)',
-                background: 'var(--rv-bg-2)',
-                fontFamily: 'var(--rv-font-mono)',
-              }}
-            >
-              {repo}
-            </button>
-          ))}
+          <button
+            onClick={() => navigate('/analyze')}
+            className="px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150"
+            style={{
+              background: 'var(--rv-blue)',
+              color: 'white',
+              boxShadow: '0 0 24px rgba(74,158,255,0.25)',
+            }}
+          >
+            Analyze a Repository
+          </button>
+          <button
+            onClick={() => navigate('/compare')}
+            className="px-6 py-2.5 rounded-xl text-sm font-medium border transition-all duration-150"
+            style={{
+              color: 'var(--rv-text-2)',
+              borderColor: 'var(--rv-border-2)',
+              background: 'var(--rv-bg-2)',
+            }}
+          >
+            Compare Two Repos
+          </button>
         </motion.div>
       </motion.div>
     </section>
@@ -449,7 +374,7 @@ function CtaSection() {
 
 export default function HomePage() {
   return (
-    <div>
+    <div className="bg-(--rv-bg-0) text-(--rv-text-1)">
       <HeroSection />
       <FeaturesSection />
       <PreviewSection />

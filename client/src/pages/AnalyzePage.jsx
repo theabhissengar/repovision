@@ -134,24 +134,20 @@ function EmptyState({ onSuccess, prefillUrl: initialPrefill }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {EXAMPLE_REPOS.map(url => {
               const slug = url.replace('https://github.com/', '');
+              const isActive = prefillUrl === url;
               return (
                 <button
                   key={url}
-                  onClick={() => setPrefillUrl(url)}
-                  className="text-left px-3 py-2.5 rounded-lg border text-xs transition-all duration-150 cursor-pointer group"
+                  onClick={() =>
+                    setPrefillUrl(current => (current === url ? '' : url))
+                  }
+                  className="text-left px-3 py-2.5 rounded-lg border text-xs transition-all duration-150 cursor-pointer"
                   style={{
-                    color: 'var(--rv-text-2)',
-                    borderColor: 'var(--rv-border-1)',
-                    background: 'var(--rv-bg-2)',
+                    color: isActive ? 'var(--rv-text-1)' : 'var(--rv-text-2)',
+                    borderColor: isActive ? 'var(--rv-blue)' : 'var(--rv-border-1)',
+                    background: isActive ? 'var(--rv-bg-3)' : 'var(--rv-bg-2)',
+                    boxShadow: isActive ? '0 0 0 1px rgba(74,158,255,0.3)' : 'none',
                     fontFamily: 'var(--rv-font-mono)',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.borderColor = 'var(--rv-border-2)';
-                    e.currentTarget.style.color = 'var(--rv-text-1)';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.borderColor = 'var(--rv-border-1)';
-                    e.currentTarget.style.color = 'var(--rv-text-2)';
                   }}
                 >
                   {slug}
@@ -200,10 +196,8 @@ function ResultsCanvas({ data, onBack }) {
       {/* Metrics row */}
       <motion.div
         variants={panelReveal}
-        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
       >
-        <MetricBlock label="Stars"        value={data.stars}        icon={<StarIcon />}  accent="amber" />
-        <MetricBlock label="Forks"        value={data.forks}        icon={<ForkIcon />}  accent="cyan" />
         <MetricBlock label="Open Issues"  value={data.openIssues}   icon={<IssueIcon />} accent="rose" />
         <MetricBlock label="Contributors" value={data.contributors} icon={<UsersIcon />} accent="green" />
         <MetricBlock label="Language"     value={data.language ?? '—'} icon={<CodeIcon />} accent="blue" animate={false} />
@@ -300,31 +294,33 @@ export default function AnalyzePage() {
   }
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      {data ? (
-        <motion.div
-          key="results"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.25 }}
-        >
-          <ResultsCanvas data={data} onBack={handleBack} />
-        </motion.div>
-      ) : (
-        <motion.div
-          key={`empty-${formKey}`}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}
-        >
-          <EmptyState
-            onSuccess={setData}
-            prefillUrl={formKey === 0 ? prefillUrl : ''}
-          />
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div className="min-h-[calc(100vh-4rem)] bg-(--rv-bg-0) text-(--rv-text-1)">
+      <AnimatePresence mode="wait" initial={false}>
+        {data ? (
+          <motion.div
+            key="results"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.25 }}
+          >
+            <ResultsCanvas data={data} onBack={handleBack} />
+          </motion.div>
+        ) : (
+          <motion.div
+            key={`empty-${formKey}`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            <EmptyState
+              onSuccess={setData}
+              prefillUrl={formKey === 0 ? prefillUrl : ''}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

@@ -110,6 +110,24 @@ function CompareForm({ onSuccess }) {
     setErrors(newErrors);
     if (newErrors.url1 || newErrors.url2) return;
 
+    // Normalize to owner/repo slug and prevent comparing the same repo
+    const slug1 = url1
+      .replace(/^https?:\/\/github\.com\//i, '')
+      .replace(/\/+$/, '')
+      .toLowerCase();
+    const slug2 = url2
+      .replace(/^https?:\/\/github\.com\//i, '')
+      .replace(/\/+$/, '')
+      .toLowerCase();
+
+    if (slug1 && slug2 && slug1 === slug2) {
+      setErrors({
+        url1: '',
+        url2: 'Choose two different repositories to compare.',
+      });
+      return;
+    }
+
     setLoading(true);
     setApiError(null);
     try {
@@ -383,24 +401,30 @@ export default function ComparePage() {
   }
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      {result ? (
-        <motion.div key="results"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}>
-          <CompareResults result={result} onBack={handleBack} />
-        </motion.div>
-      ) : (
-        <motion.div key={`form-${formKey}`}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}>
-          <CompareForm onSuccess={setResult} />
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div className="min-h-[calc(100vh-4rem)] bg-(--rv-bg-0) text-(--rv-text-1)">
+      <AnimatePresence mode="wait" initial={false}>
+        {result ? (
+          <motion.div
+            key="results"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            <CompareResults result={result} onBack={handleBack} />
+          </motion.div>
+        ) : (
+          <motion.div
+            key={`form-${formKey}`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            <CompareForm onSuccess={setResult} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

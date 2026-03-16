@@ -62,7 +62,7 @@ export default function MetricBlock({
         boxShadow: `0 0 0 1px ${acc.glow}, 0 8px 24px rgba(0,0,0,0.4)`,
         transition: { duration: 0.15 },
       }}
-      className={`relative flex items-center gap-4 rounded-xl border px-4 py-4 overflow-hidden cursor-default ${className}`}
+      className={`relative flex items-center gap-4 rounded-xl border px-4 py-4 sm:px-5 sm:py-4 overflow-hidden cursor-default min-w-[220px] ${className}`}
       style={{
         background: 'var(--rv-bg-2)',
         borderColor: 'var(--rv-border-1)',
@@ -87,12 +87,12 @@ export default function MetricBlock({
       )}
 
       {/* Label + Value */}
-      <div className="flex-1 min-w-0">
-        <p className="text-xs font-medium uppercase tracking-widest truncate mb-0.5"
+      <div className="flex flex-col flex-1 min-w-0">
+        <p className="text-[0.65rem] sm:text-xs font-medium uppercase tracking-widest mb-1 leading-tight"
           style={{ color: 'var(--rv-text-3)', fontFamily: 'var(--rv-font-mono)', letterSpacing: '0.1em' }}>
           {label}
         </p>
-        <p className="text-2xl font-bold leading-none tabular-nums"
+        <p className="text-2xl font-semibold leading-tight tabular-nums whitespace-nowrap overflow-hidden text-ellipsis"
           style={{ color: 'var(--rv-text-1)', fontFamily: 'var(--rv-font-display)' }}>
           {isNumeric && animate ? (
             <>

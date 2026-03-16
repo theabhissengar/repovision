@@ -126,7 +126,7 @@ export default function LanguageChart({ languages }) {
 
         {/* ── Donut chart + center label ── */}
         <div className="relative w-44 h-44 shrink-0">
-          <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
             <PieChart>
               <Pie
                 data={data}

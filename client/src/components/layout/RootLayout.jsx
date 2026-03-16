@@ -6,7 +6,7 @@ export default function RootLayout() {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className="min-h-screen flex flex-col bg-(--rv-bg-0) text-(--rv-text-1)">
       <Navbar />
 
       {/*
@@ -20,17 +20,17 @@ export default function RootLayout() {
         </div>
       </AnimatePresence>
 
-      <footer className="border-t border-border py-5 px-4">
+      <footer className="border-t border-border py-6 px-4">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-sm text-white">
             RepoVision
             <span className="mx-1.5 text-border-strong">·</span>
-            <span className="font-mono text-muted-foreground/60">v1.3</span>
+            <span className="font-mono text-white/80">v1.4</span>
           </p>
           <nav className="flex items-center gap-4">
             <Link
               to="/about"
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="text-sm text-white/80 hover:text-white transition-colors"
             >
               About
             </Link>
@@ -39,7 +39,7 @@ export default function RootLayout() {
               href="https://github.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="text-sm text-white/80 hover:text-white transition-colors"
             >
               GitHub
             </a>

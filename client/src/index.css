@@ -57,47 +57,49 @@
   /* Sidebar dimensions */
   --rv-sidebar-collapsed: 60px;
   --rv-sidebar-expanded:  220px;
-  --rv-context-bar:       40px;
+  --rv-context-bar:       52px;
 }
 
 /* ─── Light mode overrides ────────────────────────────────────────────────── */
 
 html:not(.dark) {
-  --rv-bg-0:          #f5f7fa;
-  --rv-bg-1:          #ffffff;
-  --rv-bg-2:          #f0f2f5;
-  --rv-bg-3:          #e6e9ef;
-  --rv-bg-4:          #dce0e8;
+  /* Slightly tinted shells instead of pure white */
+  --rv-bg-0:          #edf3ff;
+  --rv-bg-1:          #f8fbff;
+  --rv-bg-2:          #e3ecff;
+  --rv-bg-3:          #d6e3ff;
+  --rv-bg-4:          #c6d7ff;
 
-  --rv-border-0:      #e8ebf0;
-  --rv-border-1:      #d5dae2;
-  --rv-border-2:      #bcc4d0;
-  --rv-border-3:      #a0abba;
+  --rv-border-0:      #d7e2ff;
+  --rv-border-1:      #c1d3ff;
+  --rv-border-2:      #a6bfff;
+  --rv-border-3:      #8ca7f5;
 
   --rv-text-1:        #0f1729;
-  --rv-text-2:        #536179;
-  --rv-text-3:        #8896a8;
+  --rv-text-2:        #4b5875;
+  --rv-text-3:        #7e8cab;
 
-  --rv-blue:          #2b7de9;
-  --rv-blue-dim:      #99c4f5;
+  /* Brighter but still soft brand accents */
+  --rv-blue:          #2563eb;
+  --rv-blue-dim:      #93c5fd;
   --rv-cyan:          #0891b2;
   --rv-green:         #059669;
   --rv-amber:         #d97706;
   --rv-rose:          #dc2626;
   --rv-purple:        #7c3aed;
 
-  --rv-glow-blue:     rgba(43, 125, 233, 0.12);
-  --rv-glow-blue-sm:  rgba(43, 125, 233, 0.06);
-  --rv-glow-cyan:     rgba(8, 145, 178, 0.10);
-  --rv-glow-green:    rgba(5, 150, 105, 0.10);
-  --rv-glow-amber:    rgba(217, 119, 6, 0.10);
-  --rv-glow-rose:     rgba(220, 38, 38, 0.10);
-  --rv-glow-purple:   rgba(124, 58, 237, 0.10);
+  --rv-glow-blue:     rgba(37, 99, 235, 0.18);
+  --rv-glow-blue-sm:  rgba(37, 99, 235, 0.10);
+  --rv-glow-cyan:     rgba(8, 145, 178, 0.16);
+  --rv-glow-green:    rgba(5, 150, 105, 0.16);
+  --rv-glow-amber:    rgba(217, 119, 6, 0.16);
+  --rv-glow-rose:     rgba(220, 38, 38, 0.16);
+  --rv-glow-purple:   rgba(124, 58, 237, 0.16);
 
-  --rv-shadow-sm:     0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
-  --rv-shadow-md:     0 4px 16px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
-  --rv-shadow-lg:     0 12px 40px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.04);
-  --rv-shadow-glow:   0 0 0 1px rgba(43,125,233,0.2), 0 8px 32px rgba(43,125,233,0.06);
+  --rv-shadow-sm:     0 1px 4px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(15, 23, 42, 0.03);
+  --rv-shadow-md:     0 8px 24px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.04);
+  --rv-shadow-lg:     0 18px 48px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(15, 23, 42, 0.06);
+  --rv-shadow-glow:   0 0 0 1px rgba(147,197,253,0.9), 0 18px 48px rgba(59,130,246,0.25);
 }
 
 /* ─── Tailwind v4 theme mapping ───────────────────────────────────────────── */
@@ -168,6 +170,35 @@ html:not(.dark) {
 
   button, a, [role="button"] {
     cursor: pointer;
+  }
+
+  button {
+    transition:
+      background-color 0.16s ease-out,
+      border-color 0.16s ease-out,
+      box-shadow 0.18s ease-out,
+      transform 0.12s ease-out;
+  }
+
+  button:hover {
+    box-shadow: var(--rv-shadow-sm);
+    transform: translateY(-1px);
+    filter: brightness(1.06);
+  }
+
+  button:active {
+    transform: translateY(0);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.03);
+    filter: brightness(0.98);
+  }
+
+  input,
+  textarea,
+  select {
+    transition:
+      border-color 0.16s ease-out,
+      box-shadow 0.18s ease-out,
+      background-color 0.16s ease-out;
   }
 
   h1, h2, h3, h4, h5, h6 {

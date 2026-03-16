@@ -29,10 +29,16 @@ export default function RepoForm({ onSuccess, onLoadingChange, defaultUrl = '', 
 
   useEffect(() => {
     if (defaultUrl !== url) {
+      // We intentionally sync the local input state when the parent-provided
+      // defaultUrl changes (e.g. when selecting an example repo).
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUrl(defaultUrl);
       onUrlChange?.(defaultUrl);
+      // Clear stale validation / API errors when user selects an example
+      if (validationError) setValidationError('');
+      if (error) clearError();
     }
-  }, [defaultUrl]);
+  }, [defaultUrl, url, onUrlChange, validationError, error, clearError]);
 
   function handleUrlChange(e) {
     const value = e.target.value;
@@ -46,7 +52,7 @@ export default function RepoForm({ onSuccess, onLoadingChange, defaultUrl = '', 
     e.preventDefault();
     setValidationError('');
     if (!isValidGithubUrl(url)) {
-      setValidationError('Enter a valid GitHub URL: github.com/owner/repo');
+      setValidationError('Enter a valid GitHub repo, e.g. vercel/next.js or full GitHub URL.');
       return;
     }
     const data = await analyzeRepo(url);

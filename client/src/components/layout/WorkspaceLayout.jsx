@@ -5,7 +5,7 @@ import SideNav from './SideNav';
 import ContextBar from './ContextBar';
 
 export default function WorkspaceLayout() {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
   const location = useLocation();
 
   return (

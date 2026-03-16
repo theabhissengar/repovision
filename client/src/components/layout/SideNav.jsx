@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, Link, useLocation } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -115,6 +115,7 @@ function NavItem({ to, label, Icon, expanded, exact = false }) {
     <NavLink
       to={to}
       end={exact}
+      title={label}
       className={({ isActive }) =>
         `relative flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 group
         ${isActive
@@ -142,7 +143,7 @@ function NavItem({ to, label, Icon, expanded, exact = false }) {
                 animate={{ opacity: 1, width: 'auto' }}
                 exit={{ opacity: 0, width: 0 }}
                 transition={{ duration: 0.18, ease: 'easeOut' }}
-                className="text-sm font-medium whitespace-nowrap overflow-hidden font-body"
+                className="text-[0.95rem] font-medium whitespace-nowrap overflow-hidden font-body"
               >
                 {label}
               </motion.span>
@@ -166,25 +167,17 @@ function DesktopSideNav({ expanded, onToggle }) {
       className="hidden md:flex flex-col h-screen sticky top-0 shrink-0 overflow-hidden
         border-r border-[var(--rv-border-1)] bg-[var(--rv-bg-1)] z-40"
     >
-      {/* Logo */}
+      {/* Logo row: icon toggles collapse */}
       <div className="flex items-center gap-3 px-4 h-14 border-b border-[var(--rv-border-0)] shrink-0">
-        <Link to="/analyze" className="flex items-center gap-3 min-w-0">
-          <span className="shrink-0"><LogoMark /></span>
-          <AnimatePresence>
-            {expanded && (
-              <motion.span
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -8 }}
-                transition={{ duration: 0.18 }}
-                className="font-display font-700 text-sm text-[var(--rv-text-1)] whitespace-nowrap"
-                style={{ fontFamily: 'var(--rv-font-display)', fontWeight: 700 }}
-              >
-                RepoVision
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </Link>
+        <button
+          type="button"
+          onClick={onToggle}
+          className="shrink-0 p-1 rounded-lg hover:bg-[var(--rv-bg-2)] transition-colors"
+          aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
+          title={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
+        >
+          <LogoMark />
+        </button>
       </div>
 
       {/* Main nav */}
@@ -203,11 +196,18 @@ function DesktopSideNav({ expanded, onToggle }) {
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[var(--rv-text-2)]
             hover:text-[var(--rv-text-1)] hover:bg-[var(--rv-bg-3)] transition-all duration-150"
           aria-label="Toggle theme"
         >
-          <span className="shrink-0 w-5 flex items-center justify-center">
+          <span
+            className="shrink-0 w-5 flex items-center justify-center"
+            style={{
+              transition: 'transform 0.35s ease',
+              transform: theme === 'dark' ? 'rotate(0deg)' : 'rotate(180deg)',
+            }}
+          >
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </span>
           <AnimatePresence>
@@ -217,7 +217,7 @@ function DesktopSideNav({ expanded, onToggle }) {
                 animate={{ opacity: 1, width: 'auto' }}
                 exit={{ opacity: 0, width: 0 }}
                 transition={{ duration: 0.18 }}
-                className="text-sm font-medium whitespace-nowrap overflow-hidden font-body"
+                className="text-[0.95rem] font-medium whitespace-nowrap overflow-hidden font-body"
               >
                 {theme === 'dark' ? 'Light mode' : 'Dark mode'}
               </motion.span>
@@ -225,38 +225,6 @@ function DesktopSideNav({ expanded, onToggle }) {
           </AnimatePresence>
         </button>
 
-        {/* Expand/collapse toggle */}
-        <button
-          onClick={onToggle}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[var(--rv-text-3)]
-            hover:text-[var(--rv-text-2)] hover:bg-[var(--rv-bg-3)] transition-all duration-150"
-          aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
-        >
-          <span className="shrink-0 w-5 flex items-center justify-center">
-            {expanded ? (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M15 18l-6-6 6-6" />
-              </svg>
-            ) : (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 18l6-6-6-6" />
-              </svg>
-            )}
-          </span>
-          <AnimatePresence>
-            {expanded && (
-              <motion.span
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: 'auto' }}
-                exit={{ opacity: 0, width: 0 }}
-                transition={{ duration: 0.18 }}
-                className="text-xs text-[var(--rv-text-3)] whitespace-nowrap overflow-hidden"
-              >
-                Collapse
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </button>
       </div>
     </motion.nav>
   );
@@ -274,7 +242,7 @@ function MobileNav() {
       <div className="md:hidden flex items-center justify-between px-4 h-14 border-b border-[var(--rv-border-0)] bg-[var(--rv-bg-1)] sticky top-0 z-50">
         <Link to="/analyze" className="flex items-center gap-2.5">
           <LogoMark />
-          <span className="font-display font-bold text-sm text-[var(--rv-text-1)]"
+          <span className="font-display font-bold text-base text-[var(--rv-text-1)]"
             style={{ fontFamily: 'var(--rv-font-display)' }}>
             RepoVision
           </span>
@@ -309,7 +277,7 @@ function MobileNav() {
               <div className="flex items-center justify-between px-4 h-14 border-b border-[var(--rv-border-0)]">
                 <Link to="/analyze" onClick={() => setOpen(false)} className="flex items-center gap-2.5">
                   <LogoMark />
-                  <span className="font-bold text-sm text-[var(--rv-text-1)]"
+                  <span className="font-bold text-base text-[var(--rv-text-1)]"
                     style={{ fontFamily: 'var(--rv-font-display)' }}>
                     RepoVision
                   </span>
@@ -338,10 +306,16 @@ function MobileNav() {
                   className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[var(--rv-text-2)]
                     hover:text-[var(--rv-text-1)] hover:bg-[var(--rv-bg-3)] transition-all duration-150 w-full"
                 >
-                  <span className="w-5 flex items-center justify-center">
+                  <span
+                    className="w-5 flex items-center justify-center"
+                    style={{
+                      transition: 'transform 0.35s ease',
+                      transform: theme === 'dark' ? 'rotate(0deg)' : 'rotate(180deg)',
+                    }}
+                  >
                     {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
                   </span>
-                  <span className="text-sm font-medium">
+                  <span className="text-[0.95rem] font-medium">
                     {theme === 'dark' ? 'Light mode' : 'Dark mode'}
                   </span>
                 </button>

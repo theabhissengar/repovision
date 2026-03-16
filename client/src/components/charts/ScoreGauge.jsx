@@ -18,13 +18,6 @@ const SCORE_COLOR = (score) => {
   return 'var(--rv-rose)';
 };
 
-const SCORE_GLOW = (score) => {
-  if (score >= 8) return 'rgba(52, 211, 153, 0.4)';
-  if (score >= 6) return 'rgba(74, 158, 255, 0.4)';
-  if (score >= 4) return 'rgba(251, 191, 36, 0.4)';
-  return 'rgba(248, 113, 113, 0.4)';
-};
-
 const SCORE_LABEL = (score) => {
   if (score >= 8) return 'Excellent';
   if (score >= 6) return 'Good';
@@ -70,7 +63,7 @@ function CountUp({ value, fontSize }) {
 }
 
 export default function ScoreGauge({ score = 0, size = 'md', label }) {
-  const { w, r, sw, fontSize, subSize } = SIZES[size] ?? SIZES.md;
+  const { w, r, sw, fontSize } = SIZES[size] ?? SIZES.md;
   const h = w * 0.62; // Half ring needs a bit less height
   const cx = w / 2;
   const cy = h * 0.88; // push arc center down
@@ -81,7 +74,6 @@ export default function ScoreGauge({ score = 0, size = 'md', label }) {
   const empty = circumference - filled;
 
   const color = SCORE_COLOR(score);
-  const glow = SCORE_GLOW(score);
   const autoLabel = label ?? SCORE_LABEL(score);
   const filterId = `gauge-glow-${size}`;
 
@@ -136,20 +128,9 @@ export default function ScoreGauge({ score = 0, size = 'md', label }) {
           style={{ stroke: color }}
         />
 
-        {/* Score number */}
+        {/* Score number (no "/10" suffix to avoid overlap artifacts) */}
         <g transform={`translate(${cx}, ${cy - sw * 0.5 - 10})`}>
           <CountUp value={score} fontSize={fontSize} />
-          <text
-            y={fontSize * 0.7 + 4}
-            textAnchor="middle"
-            dominantBaseline="central"
-            fill="var(--rv-text-3)"
-            fontSize={subSize}
-            fontFamily="var(--rv-font-mono)"
-            fontWeight={400}
-          >
-            / 10
-          </text>
         </g>
       </motion.svg>
 

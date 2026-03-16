@@ -5,7 +5,7 @@ export default function DashboardPage() {
   const { jobId } = useParams();
 
   return (
-    <div className="p-5 md:p-7 max-w-5xl mx-auto">
+    <div className="p-5 md:p-7 max-w-5xl mx-auto bg-(--rv-bg-0) text-(--rv-text-1)">
       <AnalysisDashboard jobId={jobId} />
     </div>
   );

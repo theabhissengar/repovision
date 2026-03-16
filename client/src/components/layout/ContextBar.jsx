@@ -47,12 +47,23 @@ export default function ContextBar({ repoSlug }) {
 
   return (
     <div
-      className="hidden md:flex items-center gap-2 px-5 border-b border-[var(--rv-border-0)]
+      className="hidden md:flex items-center gap-3 px-5 border-b border-[var(--rv-border-0)]
         bg-[var(--rv-bg-1)] shrink-0"
       style={{ height: 'var(--rv-context-bar)' }}
     >
+      {/* RepoVision brand to the left of breadcrumbs */}
+      <div className="flex items-center gap-2 pr-4 border-r border-[var(--rv-border-0)]">
+        <Link
+          to="/"
+          className="font-display font-semibold text-base tracking-tight text-[var(--rv-text-1)] hover:text-[var(--rv-blue)] transition-colors"
+          style={{ fontFamily: 'var(--rv-font-display)' }}
+        >
+          RepoVision
+        </Link>
+      </div>
+
       {/* Breadcrumbs */}
-      <nav className="flex items-center gap-1.5 text-xs" aria-label="Breadcrumb">
+      <nav className="flex items-center gap-1.5 text-sm" aria-label="Breadcrumb">
         {breadcrumbs.map((crumb, i) => (
           <span key={crumb.to} className="flex items-center gap-1.5">
             {i > 0 && <span className="text-[var(--rv-text-3)]"><ChevronRight /></span>}
@@ -75,7 +86,7 @@ export default function ContextBar({ repoSlug }) {
         <div className="ml-auto flex items-center gap-1.5 px-2.5 py-1 rounded-md
           bg-[var(--rv-bg-2)] border border-[var(--rv-border-1)] text-[var(--rv-text-2)]">
           <span className="text-[var(--rv-blue)]"><RepoIcon /></span>
-          <span className="text-xs font-mono text-[var(--rv-text-1)]">{repoSlug}</span>
+          <span className="text-[0.8rem] font-mono text-[var(--rv-text-1)]">{repoSlug}</span>
         </div>
       )}
     </div>

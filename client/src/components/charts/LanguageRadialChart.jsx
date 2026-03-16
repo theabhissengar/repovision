@@ -1,10 +1,5 @@
 import { useState } from 'react';
-import {
-  RadialBarChart,
-  RadialBar,
-  ResponsiveContainer,
-  Tooltip,
-} from 'recharts';
+import { RadialBarChart, RadialBar, Tooltip } from 'recharts';
 import { motion } from 'framer-motion';
 
 /**
@@ -105,32 +100,32 @@ export default function LanguageRadialChart({ languages }) {
   return (
     <div className="flex flex-col gap-5">
       {/* Radial chart */}
-      <div style={{ width: '100%', height: 180 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <RadialBarChart
-            innerRadius="25%"
-            outerRadius="95%"
-            data={data}
-            startAngle={90}
-            endAngle={-270}
-          >
-            <RadialBar
-              dataKey="value"
-              cornerRadius={4}
-              background={{ fill: 'var(--rv-bg-3)' }}
-              isAnimationActive
-              animationBegin={100}
-              animationDuration={900}
-              onMouseEnter={(_, index) => setActiveIndex(index)}
-              onMouseLeave={() => setActiveIndex(null)}
-            />
-            <Tooltip
-              content={<CustomTooltip />}
-              cursor={false}
-              isAnimationActive={false}
-            />
-          </RadialBarChart>
-        </ResponsiveContainer>
+      <div style={{ width: '100%', maxWidth: 260, margin: '0 auto' }}>
+        <RadialBarChart
+          width={260}
+          height={220}
+          innerRadius="25%"
+          outerRadius="95%"
+          data={data}
+          startAngle={90}
+          endAngle={-270}
+        >
+          <RadialBar
+            dataKey="value"
+            cornerRadius={4}
+            background={{ fill: 'var(--rv-bg-3)' }}
+            isAnimationActive
+            animationBegin={100}
+            animationDuration={900}
+            onMouseEnter={(_, index) => setActiveIndex(index)}
+            onMouseLeave={() => setActiveIndex(null)}
+          />
+          <Tooltip
+            content={<CustomTooltip />}
+            cursor={false}
+            isAnimationActive={false}
+          />
+        </RadialBarChart>
       </div>
 
       {/* Legend */}

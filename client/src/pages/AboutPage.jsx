@@ -66,7 +66,7 @@ function FeatureItem({ icon, title, desc, color }) {
 
 export default function AboutPage() {
   return (
-    <div className="max-w-3xl mx-auto px-6 py-20 space-y-20">
+    <div className="max-w-3xl mx-auto px-6 py-20 space-y-20 bg-(--rv-bg-0) text-(--rv-text-1)">
 
       {/* Hero text */}
       <motion.section

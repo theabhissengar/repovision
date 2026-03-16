@@ -62,13 +62,13 @@ function TopBar() {
   return (
     <>
       <header
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 h-14
+        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 h-16
           border-b border-[var(--rv-border-0)] glass"
       >
         {/* Logo — text only on landing TopBar */}
         <Link to="/" className="flex items-center group">
           <span
-            className="font-bold text-sm text-[var(--rv-text-1)] tracking-tight"
+            className="font-bold text-[1.15rem] text-[var(--rv-text-1)] tracking-tight"
             style={{ fontFamily: 'var(--rv-font-display)' }}
           >
             RepoVision
@@ -76,14 +76,14 @@ function TopBar() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden md:flex items-center gap-1.5">
           {NAV_LINKS.map(link => (
             <NavLink
               key={link.to}
               to={link.to}
               end={link.exact}
               className={({ isActive }) =>
-                `px-3.5 py-1.5 rounded-lg text-sm transition-all duration-150
+                `px-4 py-2 rounded-lg text-[0.95rem] transition-all duration-150
                 ${isActive
                   ? 'text-[var(--rv-text-1)] bg-[var(--rv-bg-3)]'
                   : 'text-[var(--rv-text-2)] hover:text-[var(--rv-text-1)] hover:bg-[var(--rv-bg-2)]'
@@ -103,7 +103,15 @@ function TopBar() {
               hover:bg-[var(--rv-bg-2)] transition-all duration-150"
             aria-label="Toggle theme"
           >
-            {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+            <span
+              style={{
+                display: 'inline-flex',
+                transition: 'transform 0.35s ease',
+                transform: theme === 'dark' ? 'rotate(0deg)' : 'rotate(180deg)',
+              }}
+            >
+              {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+            </span>
           </button>
 
           {/* Mobile menu button */}
@@ -175,22 +183,22 @@ function Footer() {
     <footer className="border-t border-[var(--rv-border-0)] py-8 px-6">
       <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center">
-          <span className="text-xs text-[var(--rv-text-3)]" style={{ fontFamily: 'var(--rv-font-mono)' }}>
-            RepoVision <span className="opacity-50">v1.3</span>
+          <span className="text-sm text-white" style={{ fontFamily: 'var(--rv-font-mono)' }}>
+            RepoVision <span className="opacity-80">v1.4</span>
           </span>
         </div>
         <nav className="flex items-center gap-5">
-          <Link to="/about" className="text-xs text-[var(--rv-text-3)] hover:text-[var(--rv-text-2)] transition-colors">
+          <Link to="/about" className="text-sm text-white/80 hover:text-white transition-colors">
             About
           </Link>
-          <Link to="/analyze" className="text-xs text-[var(--rv-text-3)] hover:text-[var(--rv-text-2)] transition-colors">
+          <Link to="/analyze" className="text-sm text-white/80 hover:text-white transition-colors">
             Analyze
           </Link>
           <a
             href="https://github.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-[var(--rv-text-3)] hover:text-[var(--rv-text-2)] transition-colors"
+            className="text-sm text-white/80 hover:text-white transition-colors"
           >
             GitHub
           </a>
