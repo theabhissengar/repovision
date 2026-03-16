@@ -6,10 +6,14 @@ export function useAnalyzeRepo() {
   const [error, setError] = useState(null);
   const [errorCode, setErrorCode] = useState(null);
 
-  async function analyzeRepo(repoUrl) {
-    setLoading(true);
+  function clearError() {
     setError(null);
     setErrorCode(null);
+  }
+
+  async function analyzeRepo(repoUrl) {
+    setLoading(true);
+    clearError();
     try {
       const data = await repoService.analyzeRepo(repoUrl);
       return data;
@@ -22,5 +26,5 @@ export function useAnalyzeRepo() {
     }
   }
 
-  return { analyzeRepo, loading, error, errorCode };
+  return { analyzeRepo, loading, error, errorCode, clearError };
 }

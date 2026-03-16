@@ -1,21 +1,34 @@
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import RepoForm from '../features/analyzer/components/RepoForm';
 import Card from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
 import StatCard from '../features/dashboard/components/StatCard';
 import AiAnalysisCard from '../features/analyzer/components/AiAnalysisCard';
+import LanguageChart from '../components/LanguageChart';
+import ActivityCard from '../components/ActivityCard';
+import AnalysisSkeleton from '../components/AnalysisSkeleton';
 import { formatDate } from '../utils/formatters';
 
 export default function AnalyzePage() {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const [analyzing, setAnalyzing] = useState(false);
   const data = state?.data;
 
   if (!data) {
     return (
-      <main className="max-w-2xl mx-auto py-16 px-4">
-        <h2 className="text-3xl font-bold text-white mb-8">Analyze a Repository</h2>
-        <RepoForm onSuccess={(result) => navigate('/analyze', { state: { data: result } })} />
+      <main className={`mx-auto py-16 px-4 transition-all ${analyzing ? 'max-w-4xl space-y-8' : 'max-w-2xl'}`}>
+        <div>
+          {!analyzing && (
+            <h2 className="text-3xl font-bold text-white mb-8">Analyze a Repository</h2>
+          )}
+          <RepoForm
+            onSuccess={(result) => navigate('/analyze', { state: { data: result } })}
+            onLoadingChange={setAnalyzing}
+          />
+        </div>
+        {analyzing && <AnalysisSkeleton />}
       </main>
     );
   }
@@ -38,6 +51,10 @@ export default function AnalyzePage() {
         <StatCard label="Open Issues" value={data.openIssues?.toLocaleString()} icon="🐛" />
         <StatCard label="Language" value={data.language ?? '—'} icon="💻" />
       </div>
+
+      <ActivityCard activity={data.activity} />
+
+      <LanguageChart languages={data.languages} />
 
       {data.topics?.length > 0 && (
         <Card>

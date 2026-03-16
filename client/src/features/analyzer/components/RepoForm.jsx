@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAnalyzeRepo } from '../hooks/useAnalyzeRepo';
 import { useRepoPreview } from '../hooks/useRepoPreview';
 import Input from '../../../components/ui/Input';
@@ -7,15 +7,20 @@ import ApiErrorBanner from './ApiErrorBanner';
 import RepoPreviewCard from './RepoPreviewCard';
 import { isValidGithubUrl } from '../../../utils/validation';
 
-export default function RepoForm({ onSuccess }) {
+export default function RepoForm({ onSuccess, onLoadingChange }) {
   const [url, setUrl] = useState('');
   const [validationError, setValidationError] = useState('');
-  const { analyzeRepo, loading, error, errorCode } = useAnalyzeRepo();
+  const { analyzeRepo, loading, error, errorCode, clearError } = useAnalyzeRepo();
   const { preview, previewLoading } = useRepoPreview(url);
+
+  useEffect(() => {
+    onLoadingChange?.(loading);
+  }, [loading, onLoadingChange]);
 
   function handleUrlChange(e) {
     setUrl(e.target.value);
     if (validationError) setValidationError('');
+    if (error) clearError();
   }
 
   async function handleSubmit(e) {
@@ -43,7 +48,7 @@ export default function RepoForm({ onSuccess }) {
         disabled={loading}
       />
       <RepoPreviewCard preview={preview} loading={previewLoading} />
-      {error && <ApiErrorBanner message={error} code={errorCode} />}
+      {error && <ApiErrorBanner message={error} code={errorCode} onDismiss={clearError} />}
       <Button type="submit" loading={loading} className="w-full">
         {loading ? 'Analyzing repository…' : 'Analyze Repository'}
       </Button>
