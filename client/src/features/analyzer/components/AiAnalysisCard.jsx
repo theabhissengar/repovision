@@ -1,108 +1,107 @@
-import Card from '../../../components/ui/Card';
-import InfoTooltip from '../../../components/ui/InfoTooltip';
-import { useTheme } from '../../../context/ThemeContext';
+import InsightPanel from '../../../components/insights/InsightPanel';
+import RepoScoreCard from '../../../components/insights/RepoScoreCard';
 
-function ScoreRing({ score }) {
-  const { theme } = useTheme();
-  const radius = 36;
-  const circumference = 2 * Math.PI * radius;
-  const filled = (score / 10) * circumference;
-  const trackColor = theme === 'dark' ? '#252538' : '#e2e2ee';
-  const color =
-    score >= 8 ? '#34d399' : score >= 5 ? '#8b5cf6' : '#f87171';
+// ─── Icons ─────────────────────────────────────────────────────────────────
 
+function StrengthIcon() {
   return (
-    <div className="flex flex-col items-center gap-1 shrink-0">
-      <svg width="96" height="96" viewBox="0 0 96 96" className="-rotate-90">
-        <circle
-          cx="48"
-          cy="48"
-          r={radius}
-          fill="none"
-          stroke={trackColor}
-          strokeWidth="8"
-        />
-        <circle
-          cx="48"
-          cy="48"
-          r={radius}
-          fill="none"
-          stroke={color}
-          strokeWidth="8"
-          strokeDasharray={`${filled} ${circumference}`}
-          strokeLinecap="round"
-          style={{ transition: 'stroke-dasharray 0.6s ease, stroke 0.3s ease' }}
-        />
-      </svg>
-      <span className="text-3xl font-bold text-foreground -mt-[68px] mb-[36px]">
-        {score}
-      </span>
-      <span className="text-xs text-muted-foreground tracking-wide uppercase">/ 10</span>
-    </div>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+      <polyline points="22 4 12 14.01 9 11.01"/>
+    </svg>
   );
 }
 
-function List({ items, icon, emptyText }) {
-  if (!items?.length) {
-    return <p className="text-sm text-muted-foreground italic">{emptyText}</p>;
-  }
+function ImprovementIcon() {
   return (
-    <ul className="space-y-2">
-      {items.map((item, i) => (
-        <li key={i} className="flex gap-2 text-sm text-card-foreground leading-relaxed">
-          <span className="mt-0.5 shrink-0">{icon}</span>
-          <span>{item}</span>
-        </li>
-      ))}
-    </ul>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M12 8v4M12 16h.01"/>
+    </svg>
   );
 }
+
+// ─── List item ─────────────────────────────────────────────────────────────
+
+function InsightItem({ text, accent }) {
+  const colors = {
+    green:  { dot: 'var(--rv-green)',  text: 'var(--rv-text-2)' },
+    amber:  { dot: 'var(--rv-amber)',  text: 'var(--rv-text-2)' },
+    blue:   { dot: 'var(--rv-blue)',   text: 'var(--rv-text-2)' },
+  };
+  const c = colors[accent] ?? colors.blue;
+
+  return (
+    <li className="flex gap-3 text-sm leading-relaxed">
+      <span
+        className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0"
+        style={{ background: c.dot }}
+      />
+      <span style={{ color: c.text, fontFamily: 'var(--rv-font-body)' }}>{text}</span>
+    </li>
+  );
+}
+
+// ─── Component ─────────────────────────────────────────────────────────────
 
 export default function AiAnalysisCard({ analysis }) {
-  const { score, strengths, improvements } = analysis;
+  const { score, strengths = [], improvements = [] } = analysis;
 
-  const label =
-    score >= 8 ? 'Excellent' : score >= 6 ? 'Good' : score >= 4 ? 'Fair' : 'Needs Work';
-  const labelColor =
-    score >= 8 ? 'text-green-600 dark:text-green-400'
-    : score >= 6 ? 'text-primary'
-    : score >= 4 ? 'text-yellow-600 dark:text-yellow-400'
-    : 'text-red-500 dark:text-red-400';
+  const summary = strengths.length > 0
+    ? `${strengths[0].toLowerCase().replace(/\.$/, '')}.`
+    : undefined;
 
   return (
-    <Card hoverable>
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <h3 className="text-lg font-semibold text-foreground flex items-center">
-            AI Analysis
-            <InfoTooltip text="An AI-generated quality score from 1–10 based on code structure, documentation, activity, and community engagement." />
-          </h3>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Quality score &amp; actionable insights
+    <div className="space-y-3">
+      {/* Score hero */}
+      <RepoScoreCard
+        score={score}
+        summary={summary}
+      />
+
+      {/* Strengths */}
+      <InsightPanel
+        title="Strengths"
+        icon={<StrengthIcon />}
+        count={strengths.length}
+        accentColor="green"
+        defaultOpen={strengths.length > 0}
+      >
+        {strengths.length > 0 ? (
+          <ul className="space-y-2.5 mt-3">
+            {strengths.map((item, i) => (
+              <InsightItem key={i} text={item} accent="green" />
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm mt-3" style={{ color: 'var(--rv-text-3)', fontFamily: 'var(--rv-font-body)' }}>
+            No notable strengths detected.
           </p>
-        </div>
-        <span className={`text-sm font-semibold ${labelColor}`}>{label}</span>
-      </div>
+        )}
+      </InsightPanel>
 
-      <div className="flex flex-col sm:flex-row gap-8">
-        <ScoreRing score={score} />
-
-        <div className="flex-1 grid sm:grid-cols-2 gap-6">
-          <div>
-            <h4 className="text-sm font-semibold text-green-600 dark:text-green-400 mb-3 flex items-center gap-1.5">
-              <span>✓</span> Strengths
-            </h4>
-            <List items={strengths} icon="✦" emptyText="No notable strengths detected." />
-          </div>
-
-          <div>
-            <h4 className="text-sm font-semibold text-yellow-600 dark:text-yellow-400 mb-3 flex items-center gap-1.5">
-              <span>↑</span> Suggestions
-            </h4>
-            <List items={improvements} icon="→" emptyText="No improvements needed." />
-          </div>
-        </div>
-      </div>
-    </Card>
+      {/* Improvements */}
+      <InsightPanel
+        title="Suggestions"
+        icon={<ImprovementIcon />}
+        count={improvements.length}
+        accentColor="amber"
+        defaultOpen={improvements.length > 0}
+      >
+        {improvements.length > 0 ? (
+          <ul className="space-y-2.5 mt-3">
+            {improvements.map((item, i) => (
+              <InsightItem key={i} text={item} accent="amber" />
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm mt-3" style={{ color: 'var(--rv-text-3)', fontFamily: 'var(--rv-font-body)' }}>
+            No improvements needed.
+          </p>
+        )}
+      </InsightPanel>
+    </div>
   );
 }

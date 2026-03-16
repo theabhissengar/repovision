@@ -1,153 +1,330 @@
-import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import PageTransition from '../components/ui/PageTransition';
+import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import RepoForm from '../features/analyzer/components/RepoForm';
 import RepoHero from '../features/analyzer/components/RepoHero';
-import Card from '../components/ui/Card';
-import Badge from '../components/ui/Badge';
-import StatCard from '../features/dashboard/components/StatCard';
 import AiAnalysisCard from '../features/analyzer/components/AiAnalysisCard';
-import LanguageChart from '../components/LanguageChart';
-import ActivityCard from '../components/ActivityCard';
-import AnalysisSkeleton from '../components/AnalysisSkeleton';
+import MetricBlock from '../components/insights/MetricBlock';
+import LanguageRadialChart from '../components/charts/LanguageRadialChart';
+import ActivityTimeline from '../components/charts/ActivityTimeline';
+import HealthIndicators from '../components/charts/HealthIndicators';
+import GlowBadge from '../components/ui/GlowBadge';
+import SurfacePanel from '../components/ui/SurfacePanel';
+import { GradientDivider } from '../components/ui/GradientBorder';
+import { staggerContainer, panelReveal, inViewReveal } from '../design/animations';
+import { formatNumber } from '../utils/formatters';
+
+// ─── Icons ─────────────────────────────────────────────────────────────────
+
+function StarIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </svg>
+  );
+}
+
+function ForkIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/>
+      <path d="M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9"/><path d="M12 12v3"/>
+    </svg>
+  );
+}
+
+function IssueIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/>
+    </svg>
+  );
+}
+
+function UsersIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 0 1-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg>
+  );
+}
+
+function CodeIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+    </svg>
+  );
+}
+
+function BackIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m15 18-6-6 6-6"/>
+    </svg>
+  );
+}
+
+// ─── Empty state ───────────────────────────────────────────────────────────
 
 const EXAMPLE_REPOS = [
-  { url: 'https://github.com/facebook/react', name: 'facebook/react' },
-  { url: 'https://github.com/vuejs/core', name: 'vuejs/core' },
-  { url: 'https://github.com/vercel/next.js', name: 'vercel/next.js' },
-  { url: 'https://github.com/tailwindlabs/tailwindcss', name: 'tailwindlabs/tailwindcss' },
+  'https://github.com/vercel/next.js',
+  'https://github.com/facebook/react',
+  'https://github.com/microsoft/vscode',
+  'https://github.com/rust-lang/rust',
 ];
 
-export default function AnalyzePage() {
-  const { state } = useLocation();
-  const navigate = useNavigate();
-  const [analyzing, setAnalyzing] = useState(false);
-  const [currentUrl, setCurrentUrl] = useState('');
-  const data = state?.data;
+function EmptyState({ onSuccess, prefillUrl: initialPrefill }) {
+  const [prefillUrl, setPrefillUrl] = useState(initialPrefill || '');
 
-  useEffect(() => {
-    if (!data) setCurrentUrl('');
-  }, [data]);
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[70vh] px-6 py-16">
+      <motion.div
+        variants={staggerContainer}
+        initial="initial"
+        animate="animate"
+        className="w-full max-w-lg"
+      >
+        {/* Terminal prompt */}
+        <motion.div
+          variants={panelReveal}
+          className="mb-8 text-center"
+        >
+          <div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border mb-6"
+            style={{
+              background: 'var(--rv-bg-2)',
+              borderColor: 'var(--rv-border-1)',
+              fontFamily: 'var(--rv-font-mono)',
+            }}
+          >
+            <span style={{ color: 'var(--rv-green)' }}>$</span>
+            <span style={{ color: 'var(--rv-text-2)', fontSize: 13 }}>
+              repovision analyze
+            </span>
+            <span style={{ color: 'var(--rv-blue)', fontSize: 13 }}>
+              &lt;repo-url&gt;
+            </span>
+            <span className="animate-blink" style={{ color: 'var(--rv-text-1)', fontSize: 13 }}>_</span>
+          </div>
+          <h1
+            className="text-2xl font-bold mb-2"
+            style={{ color: 'var(--rv-text-1)', fontFamily: 'var(--rv-font-display)' }}
+          >
+            Analyze a Repository
+          </h1>
+          <p className="text-sm" style={{ color: 'var(--rv-text-2)' }}>
+            Paste any public GitHub repository URL to get started.
+          </p>
+        </motion.div>
 
-  if (!data) {
-    return (
-      <PageTransition>
-      <main className={`mx-auto py-16 px-4 transition-all ${analyzing ? 'max-w-4xl space-y-8' : 'max-w-2xl'}`}>
-        <div>
-          {!analyzing && (
-            <h2 className="text-3xl font-bold text-foreground mb-8">Analyze a Repository</h2>
-          )}
-          <RepoForm
-            onSuccess={(result) => navigate('/analyze', { state: { data: result } })}
-            onLoadingChange={setAnalyzing}
-            defaultUrl={currentUrl}
-            onUrlChange={setCurrentUrl}
-          />
-        </div>
-        {analyzing && <AnalysisSkeleton />}
+        {/* Form */}
+        <motion.div variants={panelReveal}>
+          <RepoForm onSuccess={onSuccess} defaultUrl={prefillUrl} onUrlChange={setPrefillUrl} />
+        </motion.div>
 
-        {!analyzing && (
-          <section className="mt-10">
-            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-3">
-              Try Example Repositories
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {EXAMPLE_REPOS.map((repo) => (
+        {/* Example repos */}
+        <motion.div variants={panelReveal} className="mt-8">
+          <p className="text-xs uppercase tracking-widest mb-3 text-center"
+            style={{ color: 'var(--rv-text-3)', fontFamily: 'var(--rv-font-mono)' }}>
+            Or try an example
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {EXAMPLE_REPOS.map(url => {
+              const slug = url.replace('https://github.com/', '');
+              return (
                 <button
-                  key={repo.url}
-                  type="button"
-                  onClick={() => setCurrentUrl(repo.url)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors cursor-pointer
-                    ${currentUrl === repo.url
-                      ? 'border-primary bg-primary/10 text-primary'
-                      : 'border-border bg-card text-muted-foreground hover:border-border-strong hover:text-foreground'
-                    }`}
+                  key={url}
+                  onClick={() => setPrefillUrl(url)}
+                  className="text-left px-3 py-2.5 rounded-lg border text-xs transition-all duration-150 cursor-pointer group"
+                  style={{
+                    color: 'var(--rv-text-2)',
+                    borderColor: 'var(--rv-border-1)',
+                    background: 'var(--rv-bg-2)',
+                    fontFamily: 'var(--rv-font-mono)',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = 'var(--rv-border-2)';
+                    e.currentTarget.style.color = 'var(--rv-text-1)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = 'var(--rv-border-1)';
+                    e.currentTarget.style.color = 'var(--rv-text-2)';
+                  }}
                 >
-                  {repo.name}
+                  {slug}
                 </button>
+              );
+            })}
+          </div>
+        </motion.div>
+      </motion.div>
+    </div>
+  );
+}
+
+// ─── Results ───────────────────────────────────────────────────────────────
+
+function ResultsCanvas({ data, onBack }) {
+  const activity = data.activityData ?? {};
+  const analysis = data.analysis ?? {};
+
+  return (
+    <motion.div
+      variants={staggerContainer}
+      initial="initial"
+      animate="animate"
+      className="p-5 md:p-7 space-y-5 max-w-5xl mx-auto"
+    >
+      {/* Back + repo header */}
+      <motion.div variants={panelReveal} className="flex items-center gap-3">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-1.5 text-sm transition-colors duration-150 cursor-pointer"
+          style={{ color: 'var(--rv-text-3)' }}
+          onMouseEnter={e => e.currentTarget.style.color = 'var(--rv-text-2)'}
+          onMouseLeave={e => e.currentTarget.style.color = 'var(--rv-text-3)'}
+        >
+          <BackIcon />
+          New analysis
+        </button>
+      </motion.div>
+
+      {/* Repo hero */}
+      <motion.div variants={panelReveal}>
+        <RepoHero data={data} />
+      </motion.div>
+
+      {/* Metrics row */}
+      <motion.div
+        variants={panelReveal}
+        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"
+      >
+        <MetricBlock label="Stars"        value={data.stars}        icon={<StarIcon />}  accent="amber" />
+        <MetricBlock label="Forks"        value={data.forks}        icon={<ForkIcon />}  accent="cyan" />
+        <MetricBlock label="Open Issues"  value={data.openIssues}   icon={<IssueIcon />} accent="rose" />
+        <MetricBlock label="Contributors" value={data.contributors} icon={<UsersIcon />} accent="green" />
+        <MetricBlock label="Language"     value={data.language ?? '—'} icon={<CodeIcon />} accent="blue" animate={false} />
+      </motion.div>
+
+      {/* Charts row */}
+      <motion.div
+        variants={panelReveal}
+        className="grid md:grid-cols-2 gap-5"
+      >
+        {/* Language chart */}
+        {data.languages && Object.keys(data.languages).length > 0 && (
+          <SurfacePanel padding="md">
+            <p className="text-xs uppercase tracking-widest mb-4"
+              style={{ color: 'var(--rv-text-3)', fontFamily: 'var(--rv-font-mono)' }}>
+              Language Distribution
+            </p>
+            <LanguageRadialChart languages={data.languages} />
+          </SurfacePanel>
+        )}
+
+        {/* Activity timeline */}
+        <SurfacePanel padding="md">
+          <p className="text-xs uppercase tracking-widest mb-4"
+            style={{ color: 'var(--rv-text-3)', fontFamily: 'var(--rv-font-mono)' }}>
+            Commit Activity
+          </p>
+          <ActivityTimeline
+            commitsLast30Days={activity.commitsLast30Days ?? 0}
+            lastCommitDate={activity.lastCommitDate ?? data.lastUpdated}
+          />
+        </SurfacePanel>
+      </motion.div>
+
+      {/* Health indicators */}
+      <motion.div variants={panelReveal}>
+        <SurfacePanel padding="md">
+          <p className="text-xs uppercase tracking-widest mb-5"
+            style={{ color: 'var(--rv-text-3)', fontFamily: 'var(--rv-font-mono)' }}>
+            Repository Health
+          </p>
+          <HealthIndicators
+            stars={data.stars}
+            forks={data.forks}
+            openIssues={data.openIssues}
+            commitsLast30Days={activity.commitsLast30Days ?? 0}
+            contributors={data.contributors ?? 0}
+            updatedAt={data.lastUpdated}
+          />
+        </SurfacePanel>
+      </motion.div>
+
+      {/* AI Analysis */}
+      {analysis.score !== undefined && (
+        <motion.div variants={panelReveal}>
+          <AiAnalysisCard analysis={analysis} />
+        </motion.div>
+      )}
+
+      {/* Topics */}
+      {data.topics?.length > 0 && (
+        <motion.div variants={panelReveal}>
+          <SurfacePanel padding="md">
+            <p className="text-xs uppercase tracking-widest mb-3"
+              style={{ color: 'var(--rv-text-3)', fontFamily: 'var(--rv-font-mono)' }}>
+              Topics
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {data.topics.map(t => (
+                <GlowBadge key={t} color="blue" size="sm">{t}</GlowBadge>
               ))}
             </div>
-          </section>
-        )}
-      </main>
-      </PageTransition>
-    );
+          </SurfacePanel>
+        </motion.div>
+      )}
+
+      {/* Bottom spacer */}
+      <div className="h-8" />
+    </motion.div>
+  );
+}
+
+// ─── Page ──────────────────────────────────────────────────────────────────
+
+export default function AnalyzePage() {
+  const location = useLocation();
+  const [data, setData] = useState(location.state?.data ?? null);
+  const [formKey, setFormKey] = useState(0);
+  const prefillUrl = location.state?.prefillUrl ?? '';
+
+  function handleBack() {
+    setData(null);
+    setFormKey(k => k + 1); // force EmptyState + RepoForm to remount fresh (clears inputs)
   }
 
   return (
-    <PageTransition>
-    <main className="max-w-4xl mx-auto py-12 px-4 space-y-6">
-
-      {/* Back navigation */}
-      <button
-        onClick={() => navigate('/analyze', { replace: true })}
-        className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer group"
-      >
-        <span className="inline-block transition-transform group-hover:-translate-x-0.5">←</span>
-        Analyze another repository
-      </button>
-
-      {/* Hero header */}
-      <RepoHero data={data} />
-
-      {/* Stat cards — visible immediately, no extra motion needed */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Stars"       value={data.stars?.toLocaleString()}       variant="stars" />
-        <StatCard label="Forks"       value={data.forks?.toLocaleString()}       variant="forks" />
-        <StatCard label="Open Issues" value={data.openIssues?.toLocaleString()}  variant="issues" />
-        <StatCard label="Language"    value={data.language ?? '—'}               variant="language" />
-      </div>
-
-      {/* Sections below the fold reveal on scroll */}
-      <motion.div
-        initial={{ opacity: 0, y: 14 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-50px' }}
-        transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-      >
-        <ActivityCard activity={data.activity} />
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 14 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-50px' }}
-        transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-      >
-        <LanguageChart languages={data.languages} />
-      </motion.div>
-
-      {data.topics?.length > 0 && (
+    <AnimatePresence mode="wait" initial={false}>
+      {data ? (
         <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-50px' }}
-          transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+          key="results"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.25 }}
         >
-          <Card hoverable>
-            <h3 className="text-lg font-semibold text-foreground mb-3">Topics</h3>
-            <div className="flex flex-wrap gap-2">
-              {data.topics.map((topic) => (
-                <Badge key={topic} color="violet">{topic}</Badge>
-              ))}
-            </div>
-          </Card>
+          <ResultsCanvas data={data} onBack={handleBack} />
+        </motion.div>
+      ) : (
+        <motion.div
+          key={`empty-${formKey}`}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+        >
+          <EmptyState
+            onSuccess={setData}
+            prefillUrl={formKey === 0 ? prefillUrl : ''}
+          />
         </motion.div>
       )}
-
-      {data.aiAnalysis && (
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-50px' }}
-          transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-        >
-          <AiAnalysisCard analysis={data.aiAnalysis} />
-        </motion.div>
-      )}
-
-    </main>
-    </PageTransition>
+    </AnimatePresence>
   );
 }

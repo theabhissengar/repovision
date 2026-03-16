@@ -1,17 +1,22 @@
-import Card from '../../../components/ui/Card';
-import Badge from '../../../components/ui/Badge';
+import { motion } from 'framer-motion';
+import GlowBadge from '../../../components/ui/GlowBadge';
 import { formatNumber } from '../../../utils/formatters';
 
-function SkeletonLine({ className }) {
-  return <div className={`bg-muted rounded animate-pulse ${className}`} />;
+function SkeletonLine({ w = 'w-full', h = 'h-3.5' }) {
+  return (
+    <div
+      className={`${w} ${h} rounded-md animate-shimmer`}
+      style={{ background: 'var(--rv-bg-3)' }}
+    />
+  );
 }
 
-function Stat({ icon, value, label }) {
+function StatPill({ icon, value }) {
   return (
-    <span className="flex items-center gap-1 text-sm text-muted-foreground">
-      <span>{icon}</span>
-      <span className="font-medium text-foreground">{formatNumber(value)}</span>
-      {label && <span>{label}</span>}
+    <span className="inline-flex items-center gap-1.5 text-xs"
+      style={{ color: 'var(--rv-text-2)', fontFamily: 'var(--rv-font-mono)' }}>
+      <span style={{ color: 'var(--rv-text-3)' }}>{icon}</span>
+      <span style={{ color: 'var(--rv-text-1)', fontWeight: 600 }}>{formatNumber(value)}</span>
     </span>
   );
 }
@@ -19,42 +24,44 @@ function Stat({ icon, value, label }) {
 function PreviewSkeleton() {
   return (
     <div className="space-y-3">
-      <SkeletonLine className="h-5 w-52" />
-      <SkeletonLine className="h-3.5 w-full" />
-      <SkeletonLine className="h-3.5 w-4/5" />
+      <SkeletonLine w="w-52" h="h-4" />
+      <SkeletonLine w="w-full" />
+      <SkeletonLine w="w-4/5" />
       <div className="flex gap-4 pt-1">
-        <SkeletonLine className="h-3.5 w-14" />
-        <SkeletonLine className="h-3.5 w-14" />
-        <SkeletonLine className="h-3.5 w-14" />
-        <SkeletonLine className="h-3.5 w-20" />
+        <SkeletonLine w="w-16" />
+        <SkeletonLine w="w-16" />
+        <SkeletonLine w="w-20" />
       </div>
     </div>
   );
 }
 
 function PreviewData({ preview }) {
-  const visibleTopics = preview.topics?.slice(0, 5) ?? [];
-  const extraTopics = (preview.topics?.length ?? 0) - visibleTopics.length;
+  const visibleTopics = preview.topics?.slice(0, 4) ?? [];
+  const extra = (preview.topics?.length ?? 0) - visibleTopics.length;
 
   return (
     <div className="space-y-3">
       <div>
-        <h3 className="text-base font-bold text-foreground leading-tight">{preview.name}</h3>
+        <h3 className="text-sm font-bold leading-tight"
+          style={{ color: 'var(--rv-text-1)', fontFamily: 'var(--rv-font-mono)' }}>
+          {preview.name}
+        </h3>
         {preview.description && (
-          <p className="text-sm text-muted-foreground mt-1 line-clamp-2 leading-relaxed">
+          <p className="text-xs mt-1.5 line-clamp-2 leading-relaxed"
+            style={{ color: 'var(--rv-text-2)', fontFamily: 'var(--rv-font-body)' }}>
             {preview.description}
           </p>
         )}
       </div>
 
       <div className="flex flex-wrap gap-x-4 gap-y-1.5">
-        <Stat icon="⭐" value={preview.stars} label="stars" />
-        <Stat icon="🍴" value={preview.forks} label="forks" />
-        <Stat icon="🐛" value={preview.openIssues} label="issues" />
+        <StatPill icon="★" value={preview.stars} />
+        <StatPill icon="⑂" value={preview.forks} />
+        <StatPill icon="●" value={preview.openIssues} />
         {preview.language && (
-          <span className="flex items-center gap-1 text-sm">
-            <span>💻</span>
-            <span className="font-medium text-foreground">{preview.language}</span>
+          <span className="text-xs font-medium" style={{ color: 'var(--rv-cyan)', fontFamily: 'var(--rv-font-mono)' }}>
+            {preview.language}
           </span>
         )}
       </div>
@@ -62,9 +69,9 @@ function PreviewData({ preview }) {
       {visibleTopics.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {visibleTopics.map((t) => (
-            <Badge key={t} color="violet">{t}</Badge>
+            <GlowBadge key={t} color="blue" size="sm">{t}</GlowBadge>
           ))}
-          {extraTopics > 0 && <Badge color="gray">+{extraTopics} more</Badge>}
+          {extra > 0 && <GlowBadge color="gray" size="sm">+{extra}</GlowBadge>}
         </div>
       )}
     </div>
@@ -75,24 +82,35 @@ export default function RepoPreviewCard({ preview, loading }) {
   if (!loading && !preview) return null;
 
   return (
-    <Card className="border-border-strong">
+    <motion.div
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="rounded-xl border p-4"
+      style={{
+        background: 'var(--rv-bg-2)',
+        borderColor: 'var(--rv-border-1)',
+      }}
+    >
       <div className="flex items-center justify-between mb-3">
-        <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">
-          Live Preview
+        <span className="text-[10px] font-semibold uppercase tracking-widest"
+          style={{ color: 'var(--rv-text-3)', fontFamily: 'var(--rv-font-mono)' }}>
+          Preview
         </span>
         {preview && !loading && (
           <a
             href={preview.repoUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-primary hover:text-primary/80 transition-colors"
+            className="text-xs transition-opacity hover:opacity-70"
+            style={{ color: 'var(--rv-blue)' }}
           >
             Open on GitHub ↗
           </a>
         )}
       </div>
-
       {loading ? <PreviewSkeleton /> : <PreviewData preview={preview} />}
-    </Card>
+    </motion.div>
   );
 }
