@@ -1,4 +1,5 @@
 import Card from '../../../components/ui/Card';
+import InfoTooltip from '../../../components/ui/InfoTooltip';
 
 function ScoreRing({ score }) {
   const radius = 36;
@@ -66,7 +67,10 @@ export default function AiAnalysisCard({ analysis }) {
     <Card>
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-white">AI Analysis</h3>
+          <h3 className="text-lg font-semibold text-white flex items-center">
+            AI Analysis
+            <InfoTooltip text="An AI-generated quality score from 1–10 based on code structure, documentation, activity, and community engagement." />
+          </h3>
           <p className="text-sm text-gray-500 mt-0.5">
             Quality score &amp; actionable insights
           </p>

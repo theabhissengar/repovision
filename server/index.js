@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 
 const analyzeRoutes = require('./routes/analyzeRoutes');
+const compareRoutes = require('./routes/compareRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -11,6 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api', analyzeRoutes);
+app.use('/api', compareRoutes);
 
 // Catch-all error handler (malformed JSON body, unhandled throws, etc.)
 // eslint-disable-next-line no-unused-vars

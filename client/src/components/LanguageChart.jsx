@@ -6,6 +6,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import Card from './ui/Card';
+import InfoTooltip from './ui/InfoTooltip';
 
 const COLORS = [
   '#8b5cf6', // violet-500
@@ -57,7 +58,10 @@ export default function LanguageChart({ languages }) {
 
   return (
     <Card>
-      <h3 className="text-lg font-semibold text-white mb-1">Language Distribution</h3>
+      <h3 className="text-lg font-semibold text-white mb-1 flex items-center">
+        Language Distribution
+        <InfoTooltip text="The percentage of each programming language in the repository, calculated by bytes of code from the GitHub API." />
+      </h3>
       <p className="text-sm text-gray-500 mb-6">Breakdown by bytes of code</p>
 
       <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10">

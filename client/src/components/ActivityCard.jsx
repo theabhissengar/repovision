@@ -1,4 +1,5 @@
 import Card from './ui/Card';
+import InfoTooltip from './ui/InfoTooltip';
 import { formatDate } from '../utils/formatters';
 
 function activityLevel(count) {
@@ -42,7 +43,10 @@ export default function ActivityCard({ activity }) {
     <Card>
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h3 className="text-lg font-semibold text-white">Repository Activity</h3>
+          <h3 className="text-lg font-semibold text-white flex items-center">
+            Repository Activity
+            <InfoTooltip text="Commit frequency and recency over the last 30 days, used to gauge how actively maintained the project is." />
+          </h3>
           <p className="text-sm text-gray-500 mt-0.5">Based on the last 30 commits</p>
         </div>
         <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${level.color} ${level.bg}`}>

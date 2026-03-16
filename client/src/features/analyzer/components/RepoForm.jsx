@@ -7,8 +7,8 @@ import ApiErrorBanner from './ApiErrorBanner';
 import RepoPreviewCard from './RepoPreviewCard';
 import { isValidGithubUrl } from '../../../utils/validation';
 
-export default function RepoForm({ onSuccess, onLoadingChange }) {
-  const [url, setUrl] = useState('');
+export default function RepoForm({ onSuccess, onLoadingChange, defaultUrl = '', onUrlChange }) {
+  const [url, setUrl] = useState(defaultUrl);
   const [validationError, setValidationError] = useState('');
   const { analyzeRepo, loading, error, errorCode, clearError } = useAnalyzeRepo();
   const { preview, previewLoading } = useRepoPreview(url);
@@ -17,8 +17,17 @@ export default function RepoForm({ onSuccess, onLoadingChange }) {
     onLoadingChange?.(loading);
   }, [loading, onLoadingChange]);
 
+  useEffect(() => {
+    if (defaultUrl !== url) {
+      setUrl(defaultUrl);
+      onUrlChange?.(defaultUrl);
+    }
+  }, [defaultUrl]);
+
   function handleUrlChange(e) {
-    setUrl(e.target.value);
+    const value = e.target.value;
+    setUrl(value);
+    onUrlChange?.(value);
     if (validationError) setValidationError('');
     if (error) clearError();
   }
