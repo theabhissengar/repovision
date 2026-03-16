@@ -1,13 +1,25 @@
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import { motion } from 'framer-motion';
 import Card from './ui/Card';
+import { useTheme } from '../context/ThemeContext';
 
-// Matches gray-800 / gray-700 from the dark theme
-const BASE_COLOR = '#1f2937';
-const HIGHLIGHT_COLOR = '#374151';
+const DARK_BASE      = '#1c1c2e';
+const DARK_HIGHLIGHT = '#252538';
+const LIGHT_BASE     = '#e8e8f4';
+const LIGHT_HIGHLIGHT = '#f0f0f9';
 
-// Fixed widths so legend rows look naturally varied without randomness
 const LEGEND_WIDTHS = ['48%', '62%', '38%', '54%', '42%'];
+
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1 } },
+};
+
+const sectionVariants = {
+  hidden:  { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] } },
+};
 
 function StatCardSkeleton() {
   return (
@@ -54,7 +66,6 @@ function LanguageChartSkeleton() {
       <Skeleton width={170} height={13} style={{ marginBottom: 24 }} />
 
       <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10">
-        {/* Donut approximation: full circle as placeholder */}
         <div className="w-48 h-48 shrink-0">
           <Skeleton circle width={192} height={192} />
         </div>
@@ -76,19 +87,34 @@ function LanguageChartSkeleton() {
 }
 
 export default function AnalysisSkeleton() {
+  const { theme } = useTheme();
+  const baseColor      = theme === 'dark' ? DARK_BASE : LIGHT_BASE;
+  const highlightColor = theme === 'dark' ? DARK_HIGHLIGHT : LIGHT_HIGHLIGHT;
+
   return (
-    <SkeletonTheme baseColor={BASE_COLOR} highlightColor={HIGHLIGHT_COLOR}>
-      <div className="space-y-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <StatCardSkeleton key={i} />
-          ))}
-        </div>
+    <SkeletonTheme baseColor={baseColor} highlightColor={highlightColor}>
+      <motion.div
+        className="space-y-8"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div variants={sectionVariants}>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <StatCardSkeleton key={i} />
+            ))}
+          </div>
+        </motion.div>
 
-        <ActivityCardSkeleton />
+        <motion.div variants={sectionVariants}>
+          <ActivityCardSkeleton />
+        </motion.div>
 
-        <LanguageChartSkeleton />
-      </div>
+        <motion.div variants={sectionVariants}>
+          <LanguageChartSkeleton />
+        </motion.div>
+      </motion.div>
     </SkeletonTheme>
   );
 }

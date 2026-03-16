@@ -3,10 +3,10 @@ import InfoTooltip from './ui/InfoTooltip';
 import { formatDate } from '../utils/formatters';
 
 function activityLevel(count) {
-  if (count === 0) return { label: 'Inactive', color: 'text-gray-400', bg: 'bg-gray-800' };
-  if (count <= 5)  return { label: 'Low',      color: 'text-yellow-400', bg: 'bg-yellow-400/10' };
-  if (count <= 15) return { label: 'Moderate', color: 'text-violet-400', bg: 'bg-violet-400/10' };
-  return             { label: 'Active',    color: 'text-green-400',  bg: 'bg-green-400/10' };
+  if (count === 0) return { label: 'Inactive', color: 'text-muted-foreground', bg: 'bg-muted' };
+  if (count <= 5)  return { label: 'Low',      color: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-400/10' };
+  if (count <= 15) return { label: 'Moderate', color: 'text-primary', bg: 'bg-primary/10' };
+  return             { label: 'Active',    color: 'text-green-600 dark:text-green-400', bg: 'bg-green-400/10' };
 }
 
 function relativeTime(dateString) {
@@ -26,7 +26,7 @@ function relativeTime(dateString) {
 function Metric({ label, children }) {
   return (
     <div className="flex flex-col gap-1">
-      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{label}</p>
+      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</p>
       {children}
     </div>
   );
@@ -40,14 +40,14 @@ export default function ActivityCard({ activity }) {
   const relative = relativeTime(lastCommitDate);
 
   return (
-    <Card>
+    <Card hoverable>
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h3 className="text-lg font-semibold text-white flex items-center">
+          <h3 className="text-lg font-semibold text-foreground flex items-center">
             Repository Activity
             <InfoTooltip text="Commit frequency and recency over the last 30 days, used to gauge how actively maintained the project is." />
           </h3>
-          <p className="text-sm text-gray-500 mt-0.5">Based on the last 30 commits</p>
+          <p className="text-sm text-muted-foreground mt-0.5">Based on the last 30 commits</p>
         </div>
         <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${level.color} ${level.bg}`}>
           {level.label}
@@ -56,15 +56,15 @@ export default function ActivityCard({ activity }) {
 
       <div className="grid grid-cols-2 gap-6">
         <Metric label="Commits — last 30 days">
-          <p className="text-3xl font-bold text-white tabular-nums">{commitsLast30Days}</p>
+          <p className="text-3xl font-bold text-foreground tabular-nums">{commitsLast30Days}</p>
         </Metric>
 
         <Metric label="Last commit">
-          <p className="text-xl font-semibold text-white">
+          <p className="text-xl font-semibold text-foreground">
             {lastCommitDate ? formatDate(lastCommitDate) : '—'}
           </p>
           {relative && (
-            <p className="text-sm text-gray-500">{relative}</p>
+            <p className="text-sm text-muted-foreground">{relative}</p>
           )}
         </Metric>
       </div>

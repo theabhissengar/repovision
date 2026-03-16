@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import PageTransition from '../components/ui/PageTransition';
 import RepoForm from '../features/analyzer/components/RepoForm';
+import RepoHero from '../features/analyzer/components/RepoHero';
 import Card from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
 import StatCard from '../features/dashboard/components/StatCard';
@@ -8,7 +11,6 @@ import AiAnalysisCard from '../features/analyzer/components/AiAnalysisCard';
 import LanguageChart from '../components/LanguageChart';
 import ActivityCard from '../components/ActivityCard';
 import AnalysisSkeleton from '../components/AnalysisSkeleton';
-import { formatDate } from '../utils/formatters';
 
 const EXAMPLE_REPOS = [
   { url: 'https://github.com/facebook/react', name: 'facebook/react' },
@@ -30,10 +32,11 @@ export default function AnalyzePage() {
 
   if (!data) {
     return (
+      <PageTransition>
       <main className={`mx-auto py-16 px-4 transition-all ${analyzing ? 'max-w-4xl space-y-8' : 'max-w-2xl'}`}>
         <div>
           {!analyzing && (
-            <h2 className="text-3xl font-bold text-white mb-8">Analyze a Repository</h2>
+            <h2 className="text-3xl font-bold text-foreground mb-8">Analyze a Repository</h2>
           )}
           <RepoForm
             onSuccess={(result) => navigate('/analyze', { state: { data: result } })}
@@ -46,7 +49,7 @@ export default function AnalyzePage() {
 
         {!analyzing && (
           <section className="mt-10">
-            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-3">
               Try Example Repositories
             </h3>
             <div className="flex flex-wrap gap-2">
@@ -57,8 +60,8 @@ export default function AnalyzePage() {
                   onClick={() => setCurrentUrl(repo.url)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors cursor-pointer
                     ${currentUrl === repo.url
-                      ? 'border-violet-500 bg-violet-500/10 text-violet-400'
-                      : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-600 hover:text-white'
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border bg-card text-muted-foreground hover:border-border-strong hover:text-foreground'
                     }`}
                 >
                   {repo.name}
@@ -68,58 +71,83 @@ export default function AnalyzePage() {
           </section>
         )}
       </main>
+      </PageTransition>
     );
   }
 
   return (
-    <main className="max-w-4xl mx-auto py-16 px-4 space-y-8">
+    <PageTransition>
+    <main className="max-w-4xl mx-auto py-12 px-4 space-y-6">
+
+      {/* Back navigation */}
       <button
         onClick={() => navigate('/analyze', { replace: true })}
-        className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors cursor-pointer group"
+        className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer group"
       >
         <span className="inline-block transition-transform group-hover:-translate-x-0.5">←</span>
         Analyze another repository
       </button>
 
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h2 className="text-3xl font-bold text-white">{data.name}</h2>
-          {data.description && (
-            <p className="text-gray-400 mt-1 max-w-2xl">{data.description}</p>
-          )}
-        </div>
-        <Badge color="green">Analysis Complete</Badge>
-      </div>
+      {/* Hero header */}
+      <RepoHero data={data} />
 
+      {/* Stat cards — visible immediately, no extra motion needed */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Stars" value={data.stars?.toLocaleString()} icon="⭐" />
-        <StatCard label="Forks" value={data.forks?.toLocaleString()} icon="🍴" />
-        <StatCard label="Open Issues" value={data.openIssues?.toLocaleString()} icon="🐛" />
-        <StatCard label="Language" value={data.language ?? '—'} icon="💻" />
+        <StatCard label="Stars"       value={data.stars?.toLocaleString()}       variant="stars" />
+        <StatCard label="Forks"       value={data.forks?.toLocaleString()}       variant="forks" />
+        <StatCard label="Open Issues" value={data.openIssues?.toLocaleString()}  variant="issues" />
+        <StatCard label="Language"    value={data.language ?? '—'}               variant="language" />
       </div>
 
-      <ActivityCard activity={data.activity} />
+      {/* Sections below the fold reveal on scroll */}
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-50px' }}
+        transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+      >
+        <ActivityCard activity={data.activity} />
+      </motion.div>
 
-      <LanguageChart languages={data.languages} />
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-50px' }}
+        transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+      >
+        <LanguageChart languages={data.languages} />
+      </motion.div>
 
       {data.topics?.length > 0 && (
-        <Card>
-          <h3 className="text-lg font-semibold text-white mb-3">Topics</h3>
-          <div className="flex flex-wrap gap-2">
-            {data.topics.map((topic) => (
-              <Badge key={topic} color="violet">{topic}</Badge>
-            ))}
-          </div>
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+        >
+          <Card hoverable>
+            <h3 className="text-lg font-semibold text-foreground mb-3">Topics</h3>
+            <div className="flex flex-wrap gap-2">
+              {data.topics.map((topic) => (
+                <Badge key={topic} color="violet">{topic}</Badge>
+              ))}
+            </div>
+          </Card>
+        </motion.div>
       )}
 
-      {data.aiAnalysis && <AiAnalysisCard analysis={data.aiAnalysis} />}
-
-      {data.lastUpdated && (
-        <p className="text-sm text-gray-500">
-          Last updated {formatDate(data.lastUpdated)}
-        </p>
+      {data.aiAnalysis && (
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+        >
+          <AiAnalysisCard analysis={data.aiAnalysis} />
+        </motion.div>
       )}
+
     </main>
+    </PageTransition>
   );
 }

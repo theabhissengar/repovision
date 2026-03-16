@@ -44,16 +44,16 @@ function getWinner(metric, repo1, repo2) {
 function RepoHeader({ label, name }) {
   return (
     <div className="p-4 text-center">
-      <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">{label}</p>
-      <p className="font-semibold text-white truncate" title={name}>{name}</p>
+      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
+      <p className="font-semibold text-foreground truncate" title={name}>{name}</p>
     </div>
   );
 }
 
 function MetricCell({ value, isWinner }) {
   return (
-    <div className={`p-4 flex items-center justify-center gap-2 ${isWinner ? 'bg-violet-950/30' : ''}`}>
-      <span className={`text-lg font-bold ${isWinner ? 'text-violet-300' : 'text-white'}`}>
+    <div className={`p-4 flex items-center justify-center gap-2 ${isWinner ? 'bg-primary/5' : ''}`}>
+      <span className={`text-lg font-bold ${isWinner ? 'text-primary' : 'text-foreground'}`}>
         {value}
       </span>
       {isWinner && <Badge color="violet">Best</Badge>}
@@ -64,8 +64,8 @@ function MetricCell({ value, isWinner }) {
 export default function ComparisonTable({ repo1, repo2 }) {
   return (
     <Card className="overflow-hidden p-0!">
-      <div className="grid grid-cols-3 divide-x divide-gray-800 border-b border-gray-800">
-        <div className="p-4 bg-gray-800/20" />
+      <div className="grid grid-cols-3 divide-x divide-border border-b border-border">
+        <div className="p-4 bg-muted" />
         <RepoHeader label="Repo 1" name={repo1.name} />
         <RepoHeader label="Repo 2" name={repo2.name} />
       </div>
@@ -77,11 +77,11 @@ export default function ComparisonTable({ repo1, repo2 }) {
         return (
           <div
             key={metric.key}
-            className={`grid grid-cols-3 divide-x divide-gray-800 ${!isLast ? 'border-b border-gray-800' : ''}`}
+            className={`grid grid-cols-3 divide-x divide-border ${!isLast ? 'border-b border-border' : ''}`}
           >
-            <div className="p-4 flex items-center gap-2.5 bg-gray-800/20">
+            <div className="p-4 flex items-center gap-2.5 bg-muted">
               <span className="text-xl leading-none">{metric.icon}</span>
-              <span className="text-sm font-medium text-gray-300">{metric.label}</span>
+              <span className="text-sm font-medium text-card-foreground">{metric.label}</span>
             </div>
             <MetricCell value={metric.format(repo1[metric.key])} isWinner={winner === 1} />
             <MetricCell value={metric.format(repo2[metric.key])} isWinner={winner === 2} />

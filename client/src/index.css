@@ -1,1 +1,98 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─────────────────────────────────────────────────────────────────
+   RepoVision Design Tokens
+   Semantic colors for a modern developer analytics SaaS.
+   Light mode values defined on :root, overridden for .dark.
+───────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Page & surface backgrounds */
+  --rv-background:              #f8f9fc;
+  --rv-card:                    #ffffff;
+  --rv-muted:                   #f0f0f9;
+
+  /* Borders */
+  --rv-border:                  #e2e2ee;
+  --rv-border-strong:           #c8c8de;
+
+  /* Typography */
+  --rv-foreground:              #0f1023;
+  --rv-card-foreground:         #0f1023;
+  --rv-muted-foreground:        #5a5b7c;
+
+  /* Primary — violet (brand identity) */
+  --rv-primary:                 #7c3aed;
+  --rv-primary-foreground:      #ffffff;
+
+  /* Secondary — light tinted surface */
+  --rv-secondary:               #ebebf7;
+  --rv-secondary-foreground:    #4a4b6b;
+
+  /* Accent — sky/cyan (data & analytics) */
+  --rv-accent:                  #0369a1;
+  --rv-accent-foreground:       #ffffff;
+}
+
+.dark {
+  /* Page & surface backgrounds */
+  --rv-background:              #08080e;
+  --rv-card:                    #101018;
+  --rv-muted:                   #18182a;
+
+  /* Borders */
+  --rv-border:                  #252538;
+  --rv-border-strong:           #383850;
+
+  /* Typography */
+  --rv-foreground:              #eeeef8;
+  --rv-card-foreground:         #eeeef8;
+  --rv-muted-foreground:        #8888a8;
+
+  /* Primary — violet (slightly lighter for dark-mode legibility) */
+  --rv-primary:                 #8b5cf6;
+  --rv-primary-foreground:      #ffffff;
+
+  /* Secondary — dark tinted surface */
+  --rv-secondary:               #18182a;
+  --rv-secondary-foreground:    #8888a8;
+
+  /* Accent — sky-400 (vibrant on dark backgrounds) */
+  --rv-accent:                  #38bdf8;
+  --rv-accent-foreground:       #08080e;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Register tokens as Tailwind utilities via @theme inline
+   Generates: bg-*, text-*, border-* for every token below.
+   `inline` = use CSS var at runtime (enables dark-mode switching).
+───────────────────────────────────────────────────────────────── */
+@theme inline {
+  --color-background:           var(--rv-background);
+  --color-card:                 var(--rv-card);
+  --color-muted:                var(--rv-muted);
+  --color-border:               var(--rv-border);
+  --color-border-strong:        var(--rv-border-strong);
+  --color-foreground:           var(--rv-foreground);
+  --color-card-foreground:      var(--rv-card-foreground);
+  --color-muted-foreground:     var(--rv-muted-foreground);
+  --color-primary:              var(--rv-primary);
+  --color-primary-foreground:   var(--rv-primary-foreground);
+  --color-secondary:            var(--rv-secondary);
+  --color-secondary-foreground: var(--rv-secondary-foreground);
+  --color-accent:               var(--rv-accent);
+  --color-accent-foreground:    var(--rv-accent-foreground);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Global base styles
+───────────────────────────────────────────────────────────────── */
+@layer base {
+  *, *::before, *::after {
+    transition-property: color, background-color, border-color;
+    transition-timing-function: ease;
+    transition-duration: 150ms;
+  }
+}

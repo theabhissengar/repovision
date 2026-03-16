@@ -2,15 +2,15 @@ import Card from '../../../components/ui/Card';
 import Badge from '../../../components/ui/Badge';
 import { formatNumber } from '../../../utils/formatters';
 
-function Skeleton({ className }) {
-  return <div className={`bg-gray-700/70 rounded animate-pulse ${className}`} />;
+function SkeletonLine({ className }) {
+  return <div className={`bg-muted rounded animate-pulse ${className}`} />;
 }
 
 function Stat({ icon, value, label }) {
   return (
-    <span className="flex items-center gap-1 text-sm text-gray-400">
+    <span className="flex items-center gap-1 text-sm text-muted-foreground">
       <span>{icon}</span>
-      <span className="font-medium text-white">{formatNumber(value)}</span>
+      <span className="font-medium text-foreground">{formatNumber(value)}</span>
       {label && <span>{label}</span>}
     </span>
   );
@@ -19,14 +19,14 @@ function Stat({ icon, value, label }) {
 function PreviewSkeleton() {
   return (
     <div className="space-y-3">
-      <Skeleton className="h-5 w-52" />
-      <Skeleton className="h-3.5 w-full" />
-      <Skeleton className="h-3.5 w-4/5" />
+      <SkeletonLine className="h-5 w-52" />
+      <SkeletonLine className="h-3.5 w-full" />
+      <SkeletonLine className="h-3.5 w-4/5" />
       <div className="flex gap-4 pt-1">
-        <Skeleton className="h-3.5 w-14" />
-        <Skeleton className="h-3.5 w-14" />
-        <Skeleton className="h-3.5 w-14" />
-        <Skeleton className="h-3.5 w-20" />
+        <SkeletonLine className="h-3.5 w-14" />
+        <SkeletonLine className="h-3.5 w-14" />
+        <SkeletonLine className="h-3.5 w-14" />
+        <SkeletonLine className="h-3.5 w-20" />
       </div>
     </div>
   );
@@ -39,9 +39,9 @@ function PreviewData({ preview }) {
   return (
     <div className="space-y-3">
       <div>
-        <h3 className="text-base font-bold text-white leading-tight">{preview.name}</h3>
+        <h3 className="text-base font-bold text-foreground leading-tight">{preview.name}</h3>
         {preview.description && (
-          <p className="text-sm text-gray-400 mt-1 line-clamp-2 leading-relaxed">
+          <p className="text-sm text-muted-foreground mt-1 line-clamp-2 leading-relaxed">
             {preview.description}
           </p>
         )}
@@ -54,7 +54,7 @@ function PreviewData({ preview }) {
         {preview.language && (
           <span className="flex items-center gap-1 text-sm">
             <span>💻</span>
-            <span className="font-medium text-white">{preview.language}</span>
+            <span className="font-medium text-foreground">{preview.language}</span>
           </span>
         )}
       </div>
@@ -75,9 +75,9 @@ export default function RepoPreviewCard({ preview, loading }) {
   if (!loading && !preview) return null;
 
   return (
-    <Card className="border-gray-700/80">
+    <Card className="border-border-strong">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-widest">
+        <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">
           Live Preview
         </span>
         {preview && !loading && (
@@ -85,7 +85,7 @@ export default function RepoPreviewCard({ preview, loading }) {
             href={preview.repoUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
+            className="text-xs text-primary hover:text-primary/80 transition-colors"
           >
             Open on GitHub ↗
           </a>
