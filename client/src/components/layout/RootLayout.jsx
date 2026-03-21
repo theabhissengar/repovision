@@ -25,7 +25,7 @@ export default function RootLayout() {
           <p className="text-sm text-white">
             RepoVision
             <span className="mx-1.5 text-border-strong">·</span>
-            <span className="font-mono text-white/80">v1.4</span>
+            <span className="font-mono text-white/80">v1.5</span>
           </p>
           <nav className="flex items-center gap-4">
             <Link

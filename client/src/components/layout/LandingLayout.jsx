@@ -184,7 +184,7 @@ function Footer() {
       <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center">
           <span className="text-sm text-white" style={{ fontFamily: 'var(--rv-font-mono)' }}>
-            RepoVision <span className="opacity-80">v1.4</span>
+            RepoVision <span className="opacity-80">v1.5</span>
           </span>
         </div>
         <nav className="flex items-center gap-5">

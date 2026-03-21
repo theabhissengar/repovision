@@ -1,9 +1,11 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 
-const analyzeRoutes = require('./routes/analyzeRoutes');
-const compareRoutes = require('./routes/compareRoutes');
+const analyzeRoutes = require('./src/routes/analyzeRoutes');
+const compareRoutes = require('./src/routes/compareRoutes');
+const repoRoutes = require('./src/routes/repo.routes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -13,6 +15,7 @@ app.use(express.json());
 
 app.use('/api', analyzeRoutes);
 app.use('/api', compareRoutes);
+app.use('/api', repoRoutes);
 
 // Catch-all error handler (malformed JSON body, unhandled throws, etc.)
 // eslint-disable-next-line no-unused-vars

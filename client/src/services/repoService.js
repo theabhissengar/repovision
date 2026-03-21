@@ -20,4 +20,8 @@ export const repoService = {
   compareRepos(repo1, repo2) {
     return api.post('/compare', { repo1, repo2 });
   },
+
+  fetchRepoHealth(owner, repo) {
+    return api.get('/repo/health', { params: { owner, repo } });
+  },
 };

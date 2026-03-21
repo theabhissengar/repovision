@@ -1,9 +1,13 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import RepoForm from '../features/analyzer/components/RepoForm';
 import RepoHero from '../features/analyzer/components/RepoHero';
 import AiAnalysisCard from '../features/analyzer/components/AiAnalysisCard';
+import RepoHealthPanel from '../features/analyzer/components/RepoHealthPanel';
+import ScoreBreakdown from '../features/analyzer/components/ScoreBreakdown';
+import InsightList from '../features/analyzer/components/InsightList';
+import { useRepoHealth } from '../features/analyzer/hooks/useRepoHealth';
 import MetricBlock from '../components/insights/MetricBlock';
 import LanguageRadialChart from '../components/charts/LanguageRadialChart';
 import ActivityTimeline from '../components/charts/ActivityTimeline';
@@ -165,7 +169,17 @@ function EmptyState({ onSuccess, prefillUrl: initialPrefill }) {
 
 function ResultsCanvas({ data, onBack }) {
   const activity = data.activityData ?? {};
-  const analysis = data.analysis ?? {};
+  const analysis = data.analysis ?? data.aiAnalysis ?? {};
+
+  const { owner, repo } = useMemo(() => {
+    const name = data.name;
+    if (!name || typeof name !== 'string') return { owner: '', repo: '' };
+    const slash = name.indexOf('/');
+    if (slash < 0) return { owner: '', repo: '' };
+    return { owner: name.slice(0, slash), repo: name.slice(slash + 1) };
+  }, [data.name]);
+
+  const health = useRepoHealth(owner, repo);
 
   return (
     <motion.div
@@ -254,6 +268,32 @@ function ResultsCanvas({ data, onBack }) {
       {analysis.score !== undefined && (
         <motion.div variants={panelReveal}>
           <AiAnalysisCard analysis={analysis} />
+        </motion.div>
+      )}
+
+      {/* Deep health report (backend GET /api/repo/health) */}
+      {owner && repo && (
+        <motion.div variants={panelReveal} className="space-y-5">
+          <div className="pt-1">
+            <GradientDivider />
+            <p
+              className="text-xs uppercase tracking-widest mt-5 mb-0 text-center"
+              style={{ color: 'var(--rv-text-3)', fontFamily: 'var(--rv-font-mono)' }}
+            >
+              AI health report
+            </p>
+          </div>
+          <RepoHealthPanel
+            scores={health.scores}
+            report={health.report}
+            overallStatus={health.overallStatus}
+            confidence={health.confidence}
+            loading={health.loading}
+            error={health.error}
+            repoName={data.name}
+          />
+          <ScoreBreakdown scores={health.scores} loading={health.loading} error={health.error} />
+          <InsightList report={health.report} loading={health.loading} error={health.error} />
         </motion.div>
       )}
 
